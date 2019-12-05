@@ -1,32 +1,35 @@
 """
 GenCommands
-
 Commands for Character Generation
-
 """
 from evennia import default_cmds
-from evennia import Command
-# CHARGEN - Statistic Generation Commands:
-class CmdSetStr(Command):
+from evennia import 
+
+class CmdSetStat(Command):
     """
-    Set the STR of a character
+    Set the statistic of a character
     
     Usage:
-      +str <1-40>
+      +stat str <1-40>
       
     This sets the strength of the current character. This can only be used during character generation.
     """
-    key = "+str"
+    key = "+stat"
     help_category = "mush"
     
     def func(self):
         err_range = "You must supply a number between 1 and 40."
         err_high = "You don't have enough allocation points available. Try something lower."
+    err_stat = "You didn't specify a valid statistic to change. Check the stat's code and try again."
         if not self.args:
             self.caller.msg(err_range)
             return
+        if not (self.args.split(" ")[0].strip) in self.caller.db.stats:
+            self.caller.msg(err_stat)
+            return
+        stat = self.args.split(" ")[0].strip
         try:
-            power = int(self.args)
+            power = int(self.args.split(" ")[1])
         except ValueError:
             self.caller.msg(err_range)
             return
@@ -36,315 +39,9 @@ class CmdSetStr(Command):
         elif not (self.caller.db.junk >= power):
             self.caller.msg(err_high)
             return
-        self.caller.db.stats['str'] = power
+        self.caller.db.stats[stat] = power
         self.caller.db.junk = int(self.caller.db.junk - power)
-        self.caller.msg("Your Strength has become %i." % power)
-        self.caller.msg("You have %i stat points left to allocate." % self.caller.db.junk)
-
-class CmdSetDex(Command):
-    """
-    Set the DEX of a character
-    
-    Usage:
-      +dex <1-40>
-      
-    This sets the dexterity of the current character. This can only be used during character generation.
-    """
-    key = "+dex"
-    help_category = "mush"
-
-    def func(self):
-        err_range = "You must supply a number between 1 and 40."
-        err_high = "You don't have enough allocation points available. Try something lower."
-        if not self.args:
-            self.caller.msg(err_range)
-            return
-        try:
-            power = int(self.args)
-        except ValueError:
-            self.caller.msg(err_range)
-            return
-        if not (1 <= power <= 40):
-            self.caller.msg(err_range)
-            return
-        elif not (self.caller.db.junk >= power):
-            self.caller.msg(err_high)
-            return
-        self.caller.db.stats['dex'] = power
-        self.caller.db.junk = int(self.caller.db.junk - power)
-        self.caller.msg("Your Dexterity has become %i." % power)
-        self.caller.msg("You have %i stat points left to allocate." % self.caller.db.junk)
-
-class CmdSetRef(Command):
-    """
-    Set the REF of a character
-    
-    Usage:
-      +ref <1-40>
-      
-    This sets the reflexes of the current character. This can only be used during character generation.
-    """
-    key = "+ref"
-    help_category = "mush"
-    
-    def func(self):
-        err_range = "You must supply a number between 1 and 40."
-        err_high = "You don't have enough allocation points available. Try something lower."
-        if not self.args:
-            self.caller.msg(err_range)
-            return
-        try:
-            power = int(self.args)
-        except ValueError:
-            self.caller.msg(err_range)
-            return
-        if not (1 <= power <= 40):
-            self.caller.msg(err_range)
-            return
-        elif not (self.caller.db.junk >= power):
-            self.caller.msg(err_high)
-            return
-        self.caller.db.stats['ref'] = power
-        self.caller.db.junk = int(self.caller.db.junk - power)
-        self.caller.msg("Your Reflexes have become %i." % power)
-        self.caller.msg("You have %i stat points left to allocate." % self.caller.db.junk)
-
-class CmdSetFor(Command):
-    """
-    Set the FOR of a character
-    
-    Usage:
-      +for <1-40>
-      
-    This sets the fortitude of the current character. This can only be used during character generation.
-    """
-    key = "+for"
-    help_category = "mush"
-    
-    def func(self):
-        err_range = "You must supply a number between 1 and 40."
-        err_high = "You don't have enough allocation points available. Try something lower."
-        if not self.args:
-            self.caller.msg(err_range)
-            return
-        try:
-            power = int(self.args)
-        except ValueError:
-            self.caller.msg(err_range)
-            return
-        if not (1 <= power <= 40):
-            self.caller.msg(err_range)
-            return
-        elif not (self.caller.db.junk >= power):
-            self.caller.msg(err_high)
-            return
-        self.caller.db.stats['for'] = power
-        self.caller.db.junk = int(self.caller.db.junk - power)
-        self.caller.msg("Your Fortitude has become %i." % power)
-        self.caller.msg("You have %i stat points left to allocate." % self.caller.db.junk)
-
-class CmdSetCon(Command):
-    """
-    Set the CON of a character
-    
-    Usage:
-      +con <1-40>
-      
-    This sets the constitution of the current character. This can only be used during character generation.
-    """
-    key = "+con"
-    help_category = "mush"
-    
-    def func(self):
-        err_range = "You must supply a number between 1 and 40."
-        err_high = "You don't have enough allocation points available. Try something lower."
-        if not self.args:
-            self.caller.msg(err_range)
-        return
-        try:
-            power = int(self.args)
-        except ValueError:
-            self.caller.msg(err_range)
-            return
-        if not (1 <= power <= 40):
-            self.caller.msg(err_range)
-            return
-        elif not (self.caller.db.junk >= power):
-            self.caller.msg(err_high)
-            return
-        self.caller.db.stats['con'] = power
-        self.caller.db.junk = int(self.caller.db.junk - power)
-        self.caller.msg("Your Constitution has become %i." % power)
-        self.caller.msg("You have %i stat points left to allocate." % self.caller.db.junk)
-
-class CmdSetDis(Command):
-    """
-    Set the DIS of a character
-    
-    Usage:
-      +dis <1-40>
-      
-    This sets the discipline of the current character. This can only be used during character generation.
-    """
-    key = "+dis"
-    help_category = "mush"
-    
-    def func(self):
-        err_range = "You must supply a number between 1 and 40."
-        err_high = "You don't have enough allocation points available. Try something lower."
-        if not self.args:
-            self.caller.msg(err_range)
-            return
-        try:
-            power = int(self.args)
-        except ValueError:
-            self.caller.msg(err_range)
-            return
-        if not (1 <= power <= 40):
-            self.caller.msg(err_range)
-            return
-        elif not (self.caller.db.junk >= power):
-            self.caller.msg(err_high)
-            return
-        self.caller.db.stats['dis'] = power
-        self.caller.db.junk = int(self.caller.db.junk - power)
-        self.caller.msg("Your Discipline has become %i." % power)
-        self.caller.msg("You have %i stat points left to allocate." % self.caller.db.junk)
-
-class CmdSetInt(Command):
-    """
-    Set the Intelligence of a character
-    
-    Usage:
-      +int <1-40>
-      
-    This sets the intelligence of the current character. This can only be used during character generation.
-    """
-    key = "+int"
-    help_category = "mush"
-    
-    def func(self):
-        err_range = "You must supply a number between 1 and 40."
-        err_high = "You don't have enough allocation points available. Try something lower."
-        if not self.args:
-            self.caller.msg(err_range)
-            return
-        try:
-            power = int(self.args)
-        except ValueError:
-            self.caller.msg(err_range)
-            return
-        if not (1 <= power <= 40):
-            self.caller.msg(err_range)
-            return
-        elif not (self.caller.db.junk >= power):
-            self.caller.msg(err_high)
-            return
-        self.caller.db.stats['int'] = power
-        self.caller.db.junk = int(self.caller.db.junk - power)
-        self.caller.msg("Your Intelligence has become %i." % power)
-        self.caller.msg("You have %i stat points left to allocate." % self.caller.db.junk)
-
-class CmdSetWis(Command):
-    """
-    Set the WIS of a character
-    
-    Usage:
-      +wis <1-40>
-      
-    This sets the wisdom of the current character. This can only be used during character generation.
-    """
-    key = "+wis"
-    help_category = "mush"
-    
-    def func(self):
-        err_range = "You must supply a number between 1 and 40."
-        err_high = "You don't have enough allocation points available. Try something lower."
-        if not self.args:
-            self.caller.msg(err_range)
-            return
-        try:
-            power = int(self.args)
-        except ValueError:
-            self.caller.msg(err_range)
-        return
-        if not (1 <= power <= 40):
-            self.caller.msg(err_range)
-            return
-        elif not (self.caller.db.junk >= power):
-            self.caller.msg(err_high)
-            return
-        self.caller.db.stats['wis'] = power
-        self.caller.db.junk = int(self.caller.db.junk - power)
-        self.caller.msg("Your Wisdom has become %i." % power)
-        self.caller.msg("You have %i stat points left to allocate." % self.caller.db.junk)
-
-class CmdSetLuc(Command):
-    """
-    Set the Luc of a character
-    
-    Usage:
-      +luc <1-40>
-      
-    This sets the luck of the current character. This can only be used during character generation.
-    """
-    key = "+luc"
-    help_category = "mush"
-    
-    def func(self):
-        err_range = "You must supply a number between 1 and 40."
-        err_high = "You don't have enough allocation points available. Try something lower."
-        if not self.args:
-            self.caller.msg(err_range)
-            return
-        try:
-            power = int(self.args)
-        except ValueError:
-            self.caller.msg(err_range)
-            return
-        if not (1 <= power <= 40):
-            self.caller.msg(err_range)
-            return
-        elif not (self.caller.db.junk >= power):
-            self.caller.msg(err_high)
-            return
-        self.caller.db.stats['luc'] = power
-        self.caller.db.junk = int(self.caller.db.junk - power)
-        self.caller.msg("Your Luck has become %i." % power)
-        self.caller.msg("You have %i stat points left to allocate." % self.caller.db.junk)
-
-class CmdSetSoc(Command):
-    """
-    Set the Soc of a character
-    
-    Usage:
-      +soc <1-40>
-      
-    This sets the social of the current character. This can only be used during character generation.
-    """
-    key = "+soc"
-    help_category = "mush"
-    
-    def func(self):
-        err_range = "You must supply a number between 1 and 40."
-        err_high = "You don't have enough allocation points available. Try something lower."
-        if not self.args:
-            self.caller.msg(err_range)
-            return
-        try:
-            power = int(self.args)
-        except ValueError:
-            self.caller.msg(err_range)
-            return
-        if not (1 <= power <= 40):
-            self.caller.msg(err_range)
-            return
-        elif not (self.caller.db.junk >= power):
-            self.caller.msg(err_high)
-            return
-        self.caller.db.stats['soc'] = power
-        self.caller.db.junk = int(self.caller.db.junk - power)
-        self.caller.msg("Your Social has become %i." % power)
+        self.caller.msg(stat.upper + " has been set to %i." % power)
         self.caller.msg("You have %i stat points left to allocate." % self.caller.db.junk)
 
 class CmdSetReset(Command):
@@ -373,7 +70,3 @@ class CmdSetReset(Command):
         self.caller.db.junk = 200
         self.caller.msg("Your stats have been reset.")
         self.caller.msg("You have %i stat points left to allocate." % self.caller.db.junk)
-
-
-
-
